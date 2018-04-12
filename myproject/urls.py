@@ -19,5 +19,5 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from webapp import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^employees/', views.employeeList.as_view()),
+    url(r'^employee/', views.employeeList.as_view()),
 ]
