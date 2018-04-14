@@ -30,9 +30,13 @@ class SnippetList(APIView):
 
 
 
+<<<<<<< HEAD
 
 class SnippetDetail(APIView):
 	def get_object(self, pk):
+=======
+#Helo
+>>>>>>> 966af99518d707fecd3fcbdddaddcc1428d22a13
 
 	#Retrieve update or delete a code snippet
 		try:
