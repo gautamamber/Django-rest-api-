@@ -31,7 +31,7 @@ def snippet_list(request):
 #View of retrieve update and delete snippet request
 
 
-
+# Updae delete
 
 
 
