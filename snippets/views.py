@@ -1,20 +1,20 @@
 from django.shortcuts import render
-<<<<<<< HEAD
+
 
 # Create your views here.
 
 #create views for our REST api
-
+from rest_framework.decorators import action
 #from rest_framework import status
-#from rest_framework.decorators import api_view
-#from rest_framework.response import Response
-=======
+from rest_framework.decorators import api_view
+from rest_framework import viewsets
 from rest_framework import status
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
->>>>>>> 119d5089c749b5d9ed8d3650fd2e9f93751fdb1b
+from rest_framework.reverse import reverse
 from snippets.models import Snippet
+from rest_framework import renderers
 from snippets.serializers import SnippetSerializers
 from rest_framework import generics
 from snippets.serializers import UserSerializer
@@ -23,7 +23,7 @@ from rest_framework import permissions
 from django.contrib.auth.models import User
 from snippets.permissions import IsOwnerOrReadOnly
 
-<<<<<<< HEAD
+
 """
 #views of our API's
 @api_view(['GET', 'POST'])
@@ -98,6 +98,9 @@ class SnippetDetail(APIView):
 
 # REST framework provides a set of already mixed-in generic views that we can use to trim down our views.py module even more.
 
+"""
+
+REPLACE WITH ONE SINGLE CLASS
 
 class SnippetList(generics.ListCreateAPIView):
 	queryset = Snippet.objects.all()
@@ -112,8 +115,12 @@ class SnippetDetails(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Snippet.objects.all()
 	serializer_class = SnippetSerializers
 
+"""
 
 # We'll also add a couple of views to views.py. We'd like to just use read-only views for the user representations, so we'll use the ListAPIView and RetrieveAPIView generic class-based views.
+
+"""
+#Use view sets
 
 class UserList(generics.ListAPIView):
 	queryset = User.objects.all()
@@ -122,4 +129,57 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
+
+"""
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+
+	"""
+	This view automatically provide list and details action
+	"""
+	queryset = User.objects.all()
+	serializer_class = UserSerializer
+
+
+
+@api_view
+def api_root(request , format = None):
+	return Response({
+		'users' : reverse('user-list', request=request , format = format),
+		'snippets' : reverse('snippets-list' , request = request , format = format)
+
+		})
+
+
+
+"""
+
+REPLACE WITH ONE SINGLE CLASS
+class SnippetHighlight(generics.GenericAPIView):
+	queryset = Snippet.objects.all()
+	renderer_classes = (renderers.StaticHTMLRenderer, )
+
+	def get(self, request , *args, **kwargs):
+		snippet = self.get_object()
+		return Response(snippet.highlighted)
+
+"""
+class SnippetViewSet(viewsets.ModelViewSet):
+	"""
+	Automatically provide list, create, retrieve, update, destroy
+	"""
+	queryset = Snippet.objects.all()
+	serializer_class = SnippetSerializers
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly , IsOwnerOrReadOnly, )
+
+	@action(detail = True, renderer_classes = [renderers.StaticHTMLRenderer])
+	def highlight(self, request, *args, **kwargs):
+		snippet = self.get_object()
+		return Response(snippet.highlighted)
+
+	def perform_create(self, serializer):
+		serializer.save(owner = self.request.user)
+
+
+
 
